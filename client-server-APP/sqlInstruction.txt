@@ -1,3 +1,7 @@
+For the MySQL setup, open the file from client-server-app.
+Run the code and save it.
+Refresh the schemas.
+
 1. Go to be/config
 
 2. Open the file named db.js using any editor

@@ -1,18 +1,6 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : wsl-mysql
- Source Server Type    : MySQL
- Source Server Version : 80035 (8.0.35-0ubuntu0.22.04.1)
- Source Host           : 172.27.32.14:3306
- Source Schema         : userDB
-
- Target Server Type    : MySQL
- Target Server Version : 80035 (8.0.35-0ubuntu0.22.04.1)
- File Encoding         : 65001
-
- Date: 06/12/2023 10:34:38
-*/
+DROP DATABASE IF EXISTS userDB;
+CREATE DATABASE userDB;
+USE userDB;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
