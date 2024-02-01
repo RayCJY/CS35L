@@ -1,0 +1,285 @@
+Use the code we have done from basic Tic Tac Toe.
+
+1.
+The first step is to implement the turn count, if count <= 6, we let the game act like the Tic Tac Toe.
+Start from step 7, the code has different action. To do this, we have to add count state in board function.
+Then we need to pass count and setCount as prop to board and implement the handleClick function.
+
+-1. Add:
+export default function Board() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [squares, setSquares] = useState(Array(9).fill(null));
+  "const [count, setCount] = useState(1);"
+
+-2. Add:
+  function handleClick(i) {
+    if (count <= 6){
+      if (calculateWinner(squares) || squares[i]) {
+        return;
+      }
+      const nextSquares = squares.slice();
+      if (xIsNext) {
+       nextSquares[i] = 'X';
+      } else {
+        nextSquares[i] = 'O';
+      }
+      setSquares(nextSquares);
+      setCount(count + 1);
+      setXIsNext(!xIsNext);
+    }else {
+      if (calculateWinner(squares)) {
+        return;
+      }
+      //Add
+    }
+  }
+
+
+
+
+2.
+Add a new state variable preMove and a function setPreMove to update it. Initialize preMove to null.
+To move to the anther square, the first step is to click the square that you want to move. After that,
+you will have to choose the empty square to move your sign to. In order to make sure which square you
+select, change the sign to 'S' (means select).
+
+
+-1. Add
+const [preMove, setPreMove] = useState(null);
+
+-2. Add
+if (preMove === null) {
+        if (!squares[i]) return;
+      
+        if ((xIsNext && squares[i] === 'X') || (!xIsNext && squares[i] === 'O')) {
+          nextSquares[i] = 'S';
+          setSquares(nextSquares);
+          setPreMove(i);
+        }
+        return;
+      }
+
+
+This part of the code handles the case when there is no previously clicked square.
+      
+
+      
+      if (preMove === i) {
+        nextSquares[i] = xIsNext ? 'X' : 'O';
+        setSquares(nextSquares);
+        setPreMove(null);
+        return;
+      }
+
+
+This part handles the scenario where the player clicks the same square again.
+
+
+
+
+
+3.
+We have to make the rules that only allows to move adjacent. To do this, we need to make a function and
+give all the circumstances.
+
+function moveAdjacent(i, j) {
+    const adjacencyList = {
+      0: [1, 3, 4],
+      1: [0, 2, 3, 4, 5],
+      2: [1, 4, 5],
+      3: [0, 1, 4, 6, 7],
+      4: [0, 1, 2, 3, 5, 6, 7, 8],
+      5: [1, 2, 4, 7, 8],
+      6: [3, 4, 7],
+      7: [3, 4, 5, 6, 8],
+      8: [4, 5, 7]
+    };
+  
+    return adjacencyList[i].includes(j);
+  }
+
+
+
+4.
+One of your pieces is in the center square, your move must either win or vacate the center square. To implement
+this, the previous move will move to the center and the next move will either win the game or move away from
+center. We can use state variables and update them. Also, we need a state variable to check if the center is clicked.
+
+-1. Add
+const [XatCenter, setXatcenter] = useState(false);
+const [OatCenter, setOatcenter] = useState(false);
+const [clickCenter, setClickCenter] = useState(false);
+
+-2. Add
+if (preMove === null) {
+        if (!squares[i]) return;
+        if ((xIsNext && squares[i] === 'X') || (!xIsNext && squares[i] === 'O')) {
+          nextSquares[i] = 'S';
+          setSquares(nextSquares);
+          setPreMove(i);
+          setClickCenter(i === 4);
+        }
+        return;
+      }
+      
+      if (preMove === i) {
+        nextSquares[i] = xIsNext ? 'X' : 'O';
+        setSquares(nextSquares);
+        setPreMove(null);
+        return;
+      }
+      
+      if (squares[4]) {
+        const isX = squares[4] === 'X';
+        if ((isX && !xIsNext) || (!isX && xIsNext)) {
+          setXatcenter(isX);
+          setOatcenter(!isX);
+        }
+      }
+      
+      if (squares[i]) return;
+      
+      if (moveAdjacent(i, preMove)) {
+        const newPiece = xIsNext ? 'X' : 'O';
+        nextSquares[i] = newPiece;
+        nextSquares[preMove] = null;
+        setSquares(nextSquares);
+        const occupied = xIsNext ? XatCenter : OatCenter;
+        if (occupied && !calculateWinner(nextSquares) && !clickCenter) {
+          nextSquares[i] = null;
+          nextSquares[preMove] = newPiece;
+          setSquares(nextSquares);
+          
+        } else {
+          setXIsNext(!xIsNext);
+          if (xIsNext) setXatcenter(false);
+          else setOatcenter(false);
+        }
+      } else {
+        nextSquares[preMove] = xIsNext ? 'X' : 'O';
+        setSquares(nextSquares);
+        
+      }
+      setPreMove(null);
+      
+
+
+
+
+
+function handleClick(i) {
+    if (count <= 6){
+      if (calculateWinner(squares) || squares[i]) {
+        return;
+      }
+      if (xIsNext) {
+       nextSquares[i] = 'X';
+      } else {
+        nextSquares[i] = 'O';
+      }
+      if (squares[4] === 'X'){
+        setXatcenter(true);
+      }else if (squares[4] === 'O'){
+        setOatcenter(true);
+      }
+     ......
+Here, we add to check if center has X or O.
+
+
+
+      
+      if (squares[4]) {
+        const isX = squares[4] === 'X';
+        if ((isX && !xIsNext) || (!isX && xIsNext)) {
+          setXatcenter(isX);
+          setOatcenter(!isX);
+        }
+      }
+This part checks if the center square (index 4) is occupied.
+
+
+      
+      if (squares[i]) return;
+      
+      if (moveAdjacent(i, preMove)) {
+        const newPiece = xIsNext ? 'X' : 'O';
+        nextSquares[i] = newPiece;
+        nextSquares[preMove] = null;
+        setSquares(nextSquares);
+
+This part handles the case where the player clicks on a different square than the previous one.
+        
+
+
+        const occupied = xIsNext ? XatCenter : OatCenter;
+        if (occupied && !calculateWinner(nextSquares) && !clickCenter) {
+          nextSquares[i] = null;
+          nextSquares[preMove] = newPiece;
+          setSquares(nextSquares);
+          
+        } else {
+          setXIsNext(!xIsNext);
+          if (xIsNext) setXatcenter(false);
+          else setOatcenter(false);
+        }
+
+This part is a continuation of the previous one and handles moving a piece from the previous square to the clicked square.
+
+
+      } else {
+        nextSquares[preMove] = xIsNext ? 'X' : 'O';
+        setSquares(nextSquares);
+        
+      }
+      setPreMove(null);
+      
+
+
+
+
+
+
+
+
+npm notice 
+npm notice 📦  vy6j3f@0.0.0
+npm notice === Tarball Contents === 
+npm notice 92.9kB README.md                         
+npm notice 0B     chorus-lapilli.txt                
+npm notice 625B   package.json                      
+npm notice 6.2kB  package/chorus-lapilli.txt        
+npm notice 1.3kB  package/pack-chorus-lapilli.txt   
+npm notice 1.3kB  package/pack-log.txt              
+npm notice 625B   package/package.json              
+npm notice 24.8kB package/public/favicon.ico        
+npm notice 1.4kB  package/public/index.html         
+npm notice 298B   package/public/manifest.json      
+npm notice 92.9kB package/README.md                 
+npm notice 4.4kB  package/src/App.js                
+npm notice 2.3kB  package/src/createServiceWorker.js
+npm notice 256B   package/src/index.js              
+npm notice 157B   package/src/package.json          
+npm notice 234B   package/src/public/index.html     
+npm notice 968B   package/src/styles.css            
+npm notice 19.2kB package/tic-tac-toe.txt           
+npm notice 24.8kB public/favicon.ico                
+npm notice 1.4kB  public/index.html                 
+npm notice 298B   public/manifest.json              
+npm notice 4.4kB  src/App.js                        
+npm notice 2.3kB  src/createServiceWorker.js        
+npm notice 256B   src/index.js                      
+npm notice 157B   src/package.json                  
+npm notice 234B   src/public/index.html             
+npm notice 968B   src/styles.css                    
+npm notice 19.2kB tic-tac-toe.txt                   
+npm notice === Tarball Details === 
+npm notice name:          vy6j3f                                  
+npm notice version:       0.0.0                                   
+npm notice filename:      vy6j3f-0.0.0.tgz                        
+npm notice package size:  75.8 kB                                 
+npm notice unpacked size: 304.1 kB                                
+npm notice shasum:        91c36a1c4d589a3003921dbe986109c45a9b9cfd
+npm notice integrity:     sha512-/HEalpZvcpZuI[...]oesd0RBOT+Xng==
+npm notice total files:   28                                      
+npm notice 
+vy6j3f-0.0.0.tgz

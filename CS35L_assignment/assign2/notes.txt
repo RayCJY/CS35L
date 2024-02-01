@@ -1,0 +1,285 @@
+Lab2
+
+2-1
+
+Q1:
+(- 607 1)
+(expt 2 (- 607 1))
+(- (expt 2 607) 1)
+(* (expt 2 (- 607 1)) (- (expt 2 607) 1))
+
+
+1410537837067120690632079580860631898814867435147156678388386759999548677426523801141041933290376902515619505687098293
+2716408772436637008711673126815931365248745065243980587729620729744672329516665822884692680778665287018892086787945147
+8364569313922060370695064736073572378695176473055266826253284886383715072974324463835300053138429460296575143368065570
+759537328128
+
+
+Q2:
+(+ (logb (* (expt 2 (- 607 1)) (- (expt 2 607) 1))) 1)
+= 1213
+
+In the case of this number, if logb returns 1212, the number actually falls between 2^1212 and 2^1213.
+To represent it, we need 1213 bits. But in Emacs Lisp, it will use the function floor(). Therefore, adding 1 to the 
+result to get the number of bits needed for the binary representation.
+
+
+Q3
+For M-:, minibuffer eval: (Decimal(base-10), Octal(base-8), and Hex(base-16))
+
+1410537837067120690632079580860631898814867435147156678388386759999548677426523801141041933290376902515619505687098293
+2716408772436637008711673126815931365248745065243980587729620729744672329516665822884692680778665287018892086787945147
+8364569313922060370695064736073572378695176473055266826253284886383715072974324463835300053138429460296575143368065570
+759537328128
+#o1777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000, 
+#x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffc000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000
+
+
+Q4:
+"C-h k C-h k": Display the detail description of the key "C-h k" does.
+"C-h k": Runs the command describe-key, which is an interactive byte-compiled Lisp function.
+Display documentation of the function invoked by KEY-LIST
+
+
+Q5:
+"C-h k M-SPC": Display the detail description of the key "M-SPC" does.
+"C-h k" display the documentation of what M-SPC does in key binding.
+"M-SPC": Manipulate whitespace around point in a smart way. A zero or positive prefix arg allows 
+only for deletion of tabs and spaces whereas a negative prefix arg also allows for deleting newlines.
+
+Ex: 
+When invoked without any prefix argument (just M-SPC), it will smartly adjust the whitespace around the point. 
+In many default configurations, this is bound to just-one-space, which reduces all whitespace around the point 
+to a single space character.
+
+If provided with a zero or positive prefix argument (like C-u 1 M-SPC or C-u M-SPC), it will delete that many spaces or tabs, 
+but not newlines.
+
+With a negative prefix argument (like C-u -1 M-SPC), it will also consider and potentially delete newlines.
+
+
+Q6:
+After visiting the source code for the function that implements M-SPC by going to ('cycle-spacing' -> 'cycle-spacing-actions' 
+-> 'just-one-space'), it shows: Delete all spaces and tabs around point, leaving one space (or N spaces). Interactively, N is 
+the prefix numeric argument. If N is negative, delete newlines as well, leaving -N spaces. 
+
+
+
+2-3
+
+1. Invoked on an empty file(python2)
+$ python2 randline.py /dev/null
+
+Traceback (most recent call last):
+  File "randline.py", line 70, in <module>
+    main()
+  File "randline.py", line 64, in main
+    sys.stdout.write(generator.chooseline())
+  File "randline.py", line 34, in chooseline
+    return random.choice(self.lines)
+  File "/usr/lib64/python2.7/random.py", line 277, in choice
+    return seq[int(self.random() * len(seq))]  # raises IndexError if seq is empty
+IndexError: list index out of range
+
+
+The 'chooseline' method does not handle the situation when 'self.lines' is empty, which leads to the IndexError. The issue arises 
+when numlines is set to zero. Even though a file might not be empty, if numlines is zero, the program will never attempt to extract 
+any lines from the file, effectively making the file empty for the purposes of our random line chooser.
+
+
+2. Invoked on an empty file(python3)
+$ python3 randline.py /dev/null
+  File "/w/home.01/ee/ugrad/chengjui/cs35L/hw2/randline.py", line 65
+    except IOError as (errno, strerror):
+                      ^
+SyntaxError: invalid syntax
+In Python 3, the syntax for handling exceptions changed. Specifically, the "tuple unpacking" style that was allowed in Python 2 
+(using the comma) is no longer allowed in Python 3.
+
+
+3. Invoked with python2 instead python3
+
+$ python2 shuf.py -e ucla cs35
+ucla
+cs35
+
+$ python2 shuf.py -i 3-10
+4
+3
+10
+6
+8
+9
+5
+7
+
+$ python2 shuf.py -n 5 example.txt
+Moon
+Rain
+Blue
+Fish
+Bird
+
+$ python2 shuf.py -r -n 15 example.txt 
+Tree
+Chair
+Rain
+Bird
+Sun
+Blue
+Chair
+Tree
+Sun
+Bird
+Tree
+Moon
+Chair
+Blue
+Chair
+
+
+python2 shuf.py --help
+usage: shuf.py [-h] [-e [ECHO [ECHO ...]]] [-i RANGE] [-n COUNT] [-r] [file]
+
+Randomize the lines from the input
+
+positional arguments:
+  file                  Input file name or "-" for stdin
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -e [ECHO [ECHO ...]], --echo [ECHO [ECHO ...]]
+                        Treat each command-line operand as an input line
+  -i RANGE, --range RANGE
+                        Act as if input came from a file containing the range
+                        of unsigned decimal integers lo...hi, one per line
+  -n COUNT, --count COUNT
+                        Output at most count lines. By default, all input
+                        lines are output
+  -r, --repeat          Repeat output values. That is select with replacement.
+                        With this option, each output line is randomly chosen
+                        from all the inputs. This option is typically combined
+                        with --head-count; if --head-count is not given, shuf
+                        repeats indefinitely.
+
+There is not issue when I invoked python2 instead of python3. If the refactored version of the shuf.py script is invoked with Python 2, 
+it would mostly work due to the fact that I've already addressed certain Python3 specific syntax. 
+
+
+4.Performance benchmarks
+
+/usr/bin/python:
+$ time /usr/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m1.001s
+user	0m0.940s
+sys	0m0.043s
+$ time /usr/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m1.008s
+user	0m0.940s
+sys	0m0.034s
+$ time /usr/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m1.012s
+user	0m0.957s
+sys	0m0.041s
+
+Median of sum = 0m0.983s
+
+
+/usr/local/cs/bin/python3:
+$ time /usr/local/cs/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.841s
+user	0m0.777s
+sys	0m0.042s
+$ time /usr/local/cs/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.831s
+user	0m0.770s
+sys	0m0.044s
+$ time /usr/local/cs/bin/python3 shuf.py < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.822s
+user	0m0.762s
+sys	0m0.044s
+
+Median of sum = 0m0.814s
+
+
+/usr/local/cs/bin/shuf:
+$ time /usr/local/cs/bin/shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.068s
+user	0m0.056s
+sys	0m0.011s
+$ time /usr/local/cs/bin/shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.076s
+user	0m0.065s
+sys	0m0.008s
+$ time /usr/local/cs/bin/shuf < /usr/share/unicode/ucd/BidiTest.txt > /dev/null
+real	0m0.074s
+user	0m0.061s
+sys	0m0.012s
+
+Median of sum = 0m0.073s
+
+ 
+
+lscpu:
+
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              4
+On-line CPU(s) list: 0-3
+Thread(s) per core:  1
+Core(s) per socket:  4
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               85
+Model name:          Intel(R) Xeon(R) Silver 4116 CPU @ 2.10GHz
+Stepping:            4
+CPU MHz:             2095.075
+BogoMIPS:            4190.15
+Hypervisor vendor:   Microsoft
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            1024K
+L3 cache:            16896K
+NUMA node0 CPU(s):   0-3
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti ibrs ibpb stibp fsgsbase bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt avx512cd avx512bw avx512vl xsaveopt xsavec xsaves
+
+
+
+$ cat /etc/os-release
+
+NAME="Red Hat Enterprise Linux"
+VERSION="8.5 (Ootpa)"
+ID="rhel"
+ID_LIKE="fedora"
+VERSION_ID="8.5"
+PLATFORM_ID="platform:el8"
+PRETTY_NAME="Red Hat Enterprise Linux 8.5 (Ootpa)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:8::baseos"
+HOME_URL="https://www.redhat.com/"
+DOCUMENTATION_URL="https://access.redhat.com/documentation/red_hat_enterprise_linux/8/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+
+REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 8"
+REDHAT_BUGZILLA_PRODUCT_VERSION=8.5
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="8.5"
+
+
+
+$ /usr/local/cs/bin/python3 --version
+Python 3.12.0
+
+$ /usr/bin/python3 --version
+Python 3.6.8
+
+
